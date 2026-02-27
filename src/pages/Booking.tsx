@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 import { Calendar, User, Mail, Phone, MessageSquare, Home } from "lucide-react";
 
 const serviceOptions = [
@@ -37,12 +38,23 @@ const Booking = () => {
       return;
     }
     setLoading(true);
-    // For now just show success — will connect to DB later
-    setTimeout(() => {
+    const { error } = await supabase.from("bookings").insert({
+      client_name: form.name,
+      client_email: form.email,
+      client_phone: form.phone,
+      service_type: form.service,
+      budget_range: form.budget || null,
+      project_description: form.message || null,
+      preferred_date: form.date || null,
+    });
+
+    if (error) {
+      toast({ title: "Submission failed", description: error.message, variant: "destructive" });
+    } else {
       toast({ title: "Booking submitted!", description: "We'll get back to you within 24 hours." });
       setForm({ name: "", email: "", phone: "", service: "", date: "", budget: "", message: "" });
-      setLoading(false);
-    }, 1000);
+    }
+    setLoading(false);
   };
 
   return (
