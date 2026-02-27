@@ -1,1 +1,7 @@
 project_id = "nhpgyattybgldkpyxafn"
+
+[functions.admin-setup]
+verify_jwt = false
+
+[functions.admin-recover]
+verify_jwt = false
