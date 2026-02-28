@@ -1,25 +1,29 @@
 import { motion, useInView } from "framer-motion";
-import { useRef } from "react";
+import { useRef, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import portfolio1 from "@/assets/portfolio-1.jpg";
-import portfolio2 from "@/assets/portfolio-2.jpg";
-import portfolio3 from "@/assets/portfolio-3.jpg";
-import portfolio4 from "@/assets/portfolio-4.jpg";
-import portfolio5 from "@/assets/portfolio-5.jpg";
-import portfolio6 from "@/assets/portfolio-6.jpg";
+import { supabase } from "@/integrations/supabase/client";
 
-const projects = [
-  { img: portfolio1, title: "Contemporary Living", category: "Living Room" },
-  { img: portfolio2, title: "Serene Bedroom Suite", category: "Bedroom" },
-  { img: portfolio3, title: "Modern Kitchen", category: "Kitchen" },
-  { img: portfolio4, title: "Luxury Bathroom", category: "Bathroom" },
-  { img: portfolio5, title: "Executive Office", category: "Office" },
-  { img: portfolio6, title: "Elegant Dining", category: "Dining" },
-];
+
+// const projects = [
+//   { img: portfolio1, title: "Contemporary Living", category: "Living Room" },
+//   { img: portfolio2, title: "Serene Bedroom Suite", category: "Bedroom" },
+//   { img: portfolio3, title: "Modern Kitchen", category: "Kitchen" },
+//   { img: portfolio4, title: "Luxury Bathroom", category: "Bathroom" },
+//   { img: portfolio5, title: "Executive Office", category: "Office" },
+//   { img: portfolio6, title: "Elegant Dining", category: "Dining" },
+// ];
 
 const PortfolioSection = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const [projects, setProjects] = useState<any[]>([]);
+
+
+   useEffect(() => {
+    supabase.from("portfolio_items").select("*").eq("featured", true).order("sort_order").then(({ data }) => {
+      if (data) setProjects(data);
+    });
+  }, []);
 
   return (
     <section className="py-24 md:py-32 bg-secondary" ref={ref}>
@@ -36,10 +40,7 @@ const PortfolioSection = () => {
               Featured <span className="text-accent-brand italic">Projects</span>
             </h2>
           </div>
-          <Link
-            to="/gallery"
-            className="mt-4 md:mt-0 font-body text-xs uppercase tracking-[0.2em] text-accent hover:underline underline-offset-4"
-          >
+          <Link to="/gallery" className="mt-4 md:mt-0 font-body text-xs uppercase tracking-[0.2em] text-accent hover:underline underline-offset-4">
             View All Projects →
           </Link>
         </motion.div>
@@ -47,14 +48,14 @@ const PortfolioSection = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {projects.map((project, i) => (
             <motion.div
-              key={project.title}
+              key={project.id}
               initial={{ opacity: 0, y: 40 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{ delay: i * 0.15, duration: 0.7 }}
               className="group relative overflow-hidden aspect-[4/5] cursor-pointer"
             >
               <img
-                src={project.img}
+                src={project.image_url}
                 alt={project.title}
                 className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
               />
@@ -66,6 +67,10 @@ const PortfolioSection = () => {
             </motion.div>
           ))}
         </div>
+
+        {projects.length === 0 && (
+          <p className="font-body text-sm text-muted-foreground text-center py-16">No featured projects yet.</p>
+        )}
       </div>
     </section>
   );

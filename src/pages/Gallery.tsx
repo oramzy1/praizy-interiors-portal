@@ -1,27 +1,24 @@
 import { motion } from "framer-motion";
-import { useState } from "react";
-import portfolio1 from "@/assets/portfolio-1.jpg";
-import portfolio2 from "@/assets/portfolio-2.jpg";
-import portfolio3 from "@/assets/portfolio-3.jpg";
-import portfolio4 from "@/assets/portfolio-4.jpg";
-import portfolio5 from "@/assets/portfolio-5.jpg";
-import portfolio6 from "@/assets/portfolio-6.jpg";
-
-const categories = ["All", "Living Room", "Bedroom", "Kitchen", "Bathroom", "Office", "Dining"];
-
-const allProjects = [
-  { img: portfolio1, title: "Contemporary Elegance", category: "Living Room", desc: "A modern living space with warm tones and premium finishes." },
-  { img: portfolio2, title: "Serene Retreat", category: "Bedroom", desc: "A calming bedroom suite designed for ultimate relaxation." },
-  { img: portfolio3, title: "Chef's Paradise", category: "Kitchen", desc: "A modern kitchen with marble countertops and premium cabinetry." },
-  { img: portfolio4, title: "Spa-Inspired Bath", category: "Bathroom", desc: "Luxury bathroom featuring marble and brass fixtures." },
-  { img: portfolio5, title: "Executive Suite", category: "Office", desc: "A sophisticated workspace for the modern professional." },
-  { img: portfolio6, title: "Grand Dining", category: "Dining", desc: "An elegant dining space perfect for entertaining." },
-];
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 const Gallery = () => {
   const [filter, setFilter] = useState("All");
+  const [categories, setCategories] = useState<string[]>(["All"]);
+  const [allProjects, setAllProjects] = useState<any[]>([]);
 
-  const filtered = filter === "All" ? allProjects : allProjects.filter((p) => p.category === filter);
+  useEffect(() => {
+    // Fetch categories from services
+    supabase.from("services").select("title").order("sort_order").then(({ data }) => {
+      if (data) setCategories(["All", ...data.map(s => s.title)]);
+    });
+    // Fetch all visible portfolio items
+    supabase.from("portfolio_items").select("*").eq("featured", true).order("sort_order").then(({ data }) => {
+      if (data) setAllProjects(data);
+    });
+  }, []);
+
+  const filtered = filter === "All" ? allProjects : allProjects.filter(p => p.category === filter);
 
   return (
     <main className="pt-24">
@@ -38,9 +35,8 @@ const Gallery = () => {
 
       <section className="py-16">
         <div className="container mx-auto px-6">
-          {/* Filters */}
           <div className="flex flex-wrap gap-3 mb-12">
-            {categories.map((cat) => (
+            {categories.map(cat => (
               <button
                 key={cat}
                 onClick={() => setFilter(cat)}
@@ -55,11 +51,10 @@ const Gallery = () => {
             ))}
           </div>
 
-          {/* Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filtered.map((project, i) => (
               <motion.div
-                key={project.title}
+                key={project.id}
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.1, duration: 0.5 }}
@@ -67,7 +62,7 @@ const Gallery = () => {
               >
                 <div className="relative overflow-hidden aspect-[4/5]">
                   <img
-                    src={project.img}
+                    src={project.image_url}
                     alt={project.title}
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                   />
@@ -76,11 +71,17 @@ const Gallery = () => {
                 <div className="mt-4">
                   <p className="font-body text-xs tracking-[0.2em] uppercase text-accent">{project.category}</p>
                   <h3 className="font-display text-lg mt-1">{project.title}</h3>
-                  <p className="font-body text-sm text-muted-foreground mt-1">{project.desc}</p>
+                  <p className="font-body text-sm text-muted-foreground mt-1">{project.description}</p>
                 </div>
               </motion.div>
             ))}
           </div>
+
+          {filtered.length === 0 && (
+            <p className="font-body text-sm text-muted-foreground text-center py-16">
+              {allProjects.length === 0 ? "No projects yet." : "No projects in this category."}
+            </p>
+          )}
         </div>
       </section>
     </main>

@@ -1,12 +1,29 @@
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
-import { LogOut, CalendarDays, Settings, LayoutDashboard } from "lucide-react";
+import {
+  LogOut,
+  CalendarDays,
+  Settings,
+  LayoutDashboard,
+  MessageSquare,
+  Briefcase,
+  ImageIcon,
+} from "lucide-react";
 import BookingManagement from "@/components/admin/BookingManagement";
 import AdminSettings from "@/components/admin/AdminSettings";
 import DashboardOverview from "@/components/admin/DashboardOverview";
+import PortfolioManager from "@/components/admin/PortfolioManager";
+import ServicesManager from "@/components/admin/ServicesManager";
+import TestimonialsManager from "@/components/admin/TestimonialsManager";
 
-type Tab = "overview" | "bookings" | "settings";
+type Tab =
+  | "overview"
+  | "bookings"
+  | "settings"
+  | "portfolio"
+  | "services"
+  | "testimonials";
 
 const AdminDashboard = () => {
   const { signOut, user } = useAuth();
@@ -21,6 +38,13 @@ const AdminDashboard = () => {
   const tabs: { id: Tab; label: string; icon: React.ReactNode }[] = [
     { id: "overview", label: "Overview", icon: <LayoutDashboard size={18} /> },
     { id: "bookings", label: "Bookings", icon: <CalendarDays size={18} /> },
+    { id: "portfolio", label: "Portfolio", icon: <ImageIcon size={18} /> },
+    { id: "services", label: "Services", icon: <Briefcase size={18} /> },
+    {
+      id: "testimonials",
+      label: "Testimonials",
+      icon: <MessageSquare size={18} />,
+    },
     { id: "settings", label: "Settings", icon: <Settings size={18} /> },
   ];
 
@@ -29,8 +53,14 @@ const AdminDashboard = () => {
       {/* Sidebar */}
       <aside className="fixed left-0 top-0 h-full w-64 bg-background border-r border-border z-50 flex flex-col">
         <div className="p-6 border-b border-border">
-          <img src="/images/logo.png" alt="Praizy Interior" className="h-10 mb-2" />
-          <p className="font-body text-[10px] uppercase tracking-[0.2em] text-muted-foreground">Admin Dashboard</p>
+          <img
+            src="/images/logo.png"
+            alt="Praizy Interior"
+            className="h-10 mb-2"
+          />
+          <p className="font-body text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+            Admin Dashboard
+          </p>
         </div>
 
         <nav className="flex-1 p-4 space-y-1">
@@ -51,7 +81,9 @@ const AdminDashboard = () => {
         </nav>
 
         <div className="p-4 border-t border-border">
-          <p className="font-body text-xs text-muted-foreground mb-2 truncate">{user?.email}</p>
+          <p className="font-body text-xs text-muted-foreground mb-2 truncate">
+            {user?.email}
+          </p>
           <button
             onClick={handleSignOut}
             className="w-full flex items-center gap-2 px-4 py-2 font-body text-xs text-muted-foreground hover:text-foreground transition-colors"
@@ -65,6 +97,9 @@ const AdminDashboard = () => {
       <main className="ml-64 p-8">
         {activeTab === "overview" && <DashboardOverview />}
         {activeTab === "bookings" && <BookingManagement />}
+        {activeTab === "portfolio" && <PortfolioManager />}
+        {activeTab === "services" && <ServicesManager />}
+        {activeTab === "testimonials" && <TestimonialsManager />}
         {activeTab === "settings" && <AdminSettings />}
       </main>
     </div>

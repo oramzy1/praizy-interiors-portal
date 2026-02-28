@@ -27,14 +27,21 @@ const Booking = () => {
     message: "",
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >,
+  ) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.name || !form.email || !form.phone || !form.service) {
-      toast({ title: "Please fill in all required fields", variant: "destructive" });
+      toast({
+        title: "Please fill in all required fields",
+        variant: "destructive",
+      });
       return;
     }
     setLoading(true);
@@ -49,10 +56,40 @@ const Booking = () => {
     });
 
     if (error) {
-      toast({ title: "Submission failed", description: error.message, variant: "destructive" });
+      toast({
+        title: "Submission failed",
+        description: error.message,
+        variant: "destructive",
+      });
     } else {
-      toast({ title: "Booking submitted!", description: "We'll get back to you within 24 hours." });
-      setForm({ name: "", email: "", phone: "", service: "", date: "", budget: "", message: "" });
+      toast({
+        title: "Booking submitted!",
+        description: "We'll get back to you within 24 hours.",
+      });
+      await supabase.functions.invoke("send-booking-email", {
+        body: {
+          type: "new",
+          booking: {
+            ...form,
+            client_name: form.name,
+            client_email: form.email,
+            client_phone: form.phone,
+            service_type: form.service,
+            budget_range: form.budget,
+            project_description: form.message,
+            preferred_date: form.date,
+          },
+        },
+      });
+      setForm({
+        name: "",
+        email: "",
+        phone: "",
+        service: "",
+        date: "",
+        budget: "",
+        message: "",
+      });
     }
     setLoading(false);
   };
@@ -61,13 +98,21 @@ const Booking = () => {
     <main className="pt-24">
       <section className="py-16 md:py-24 bg-secondary">
         <div className="container mx-auto px-6">
-          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
-            <p className="font-body text-xs tracking-[0.3em] uppercase text-muted-foreground mb-3">Get Started</p>
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            <p className="font-body text-xs tracking-[0.3em] uppercase text-muted-foreground mb-3">
+              Get Started
+            </p>
             <h1 className="font-display text-4xl md:text-6xl font-medium">
-              Book a <span className="text-accent-brand italic">Consultation</span>
+              Book a{" "}
+              <span className="text-accent-brand italic">Consultation</span>
             </h1>
             <p className="font-body text-sm text-muted-foreground mt-4 max-w-lg leading-relaxed">
-              Fill out the form below and our design team will reach out within 24 hours to schedule your consultation.
+              Fill out the form below and our design team will reach out within
+              24 hours to schedule your consultation.
             </p>
           </motion.div>
         </div>
@@ -149,7 +194,9 @@ const Booking = () => {
               >
                 <option value="">Select a service</option>
                 {serviceOptions.map((s) => (
-                  <option key={s} value={s}>{s}</option>
+                  <option key={s} value={s}>
+                    {s}
+                  </option>
                 ))}
               </select>
             </div>
