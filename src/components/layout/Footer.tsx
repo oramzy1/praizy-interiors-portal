@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Instagram, Phone, Mail, MapPin } from "lucide-react";
+import Logo from "@/assets/logo.png";
 
 const Footer = () => {
   return (
@@ -7,7 +8,7 @@ const Footer = () => {
       <div className="container mx-auto px-6 py-16">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
           <div className="md:col-span-2">
-            <img src="/images/logo.png" alt="Praizy Interior" className="h-12 mb-4 brightness-0 invert" />
+            <img src={Logo} alt="Praizy Interior" className="h-12 mb-4" />
             <p className="font-body text-sm leading-relaxed opacity-70 max-w-sm">
               Transforming spaces into luxurious sanctuaries. We bring your vision to life with premium materials, expert craftsmanship, and timeless design.
             </p>

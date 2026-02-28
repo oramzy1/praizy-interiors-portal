@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import GalleryImage from "@/assets/Photo-3.jpg";
 
 const Gallery = () => {
   const [filter, setFilter] = useState("All");
@@ -22,11 +23,11 @@ const Gallery = () => {
 
   return (
     <main className="pt-24">
-      <section className="py-16 md:py-24 bg-secondary">
+      <section style={{ backgroundImage: `url(${GalleryImage})`, backgroundSize: "cover", backgroundPosition: "center" }} className="py-16 md:py-24">
         <div className="container mx-auto px-6">
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
-            <p className="font-body text-xs tracking-[0.3em] uppercase text-muted-foreground mb-3">Our Work</p>
-            <h1 className="font-display text-4xl md:text-6xl font-medium">
+            <p className="font-body text-xs tracking-[0.3em] uppercase text-white/90 mb-3">Our Work</p>
+            <h1 className="font-display text-4xl md:text-6xl font-medium text-white/90">
               Project <span className="text-accent-brand italic">Gallery</span>
             </h1>
           </motion.div>
