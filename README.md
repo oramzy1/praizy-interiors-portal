@@ -2,7 +2,7 @@
 
 ## Project info
 
-**URL**: [https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID](https://praizy-interiors.vercel.app/)
+**URL**:(https://praizy-interiors.vercel.app/)
 
 **Use your preferred IDE**
 
